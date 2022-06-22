@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
+import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import logo from '../../images/manga-logo.png';
 import ButtonLink from '../global/ButtonLink';
@@ -20,7 +21,9 @@ export default function AppNavbar() {
 			<Box display="flex" flexDirection="row" gap={4}>
 				<ButtonLink path="/" text="Home" />
 				<ButtonLink path="/mangas" text="Mangas" />
-				<ButtonLink path="/api" text="API" />
+				<Button color="secondary">
+					<a href="https://localhost:7227/swagger/index.html">API</a>
+				</Button>
 			</Box>
 		</Box>
 	);
