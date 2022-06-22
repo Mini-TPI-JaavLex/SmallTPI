@@ -18,11 +18,10 @@ export default function Layout({ children }: PropsWithChildren) {
 				right={0}
 				left={0}
 				marginTop={-0.5}
-				bgcolor="background.paper"
 			>
 				<AppNavbar />
 			</Box>
-			<Box sx={{ flex: 1, mt: 6 }}>{children}</Box>
+			<Box sx={{ flex: 1, mt: 6, height: '100%' }}>{children}</Box>
 			<Box
 				display="flex"
 				justifyContent="center"
@@ -32,7 +31,6 @@ export default function Layout({ children }: PropsWithChildren) {
 				right={0}
 				left={0}
 				marginBottom={-0.5}
-				bgcolor="background.paper"
 			>
 				<AppFooter />
 			</Box>
