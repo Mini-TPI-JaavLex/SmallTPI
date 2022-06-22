@@ -1,3 +1,4 @@
+using kata_manga_backend.Dto;
 using kata_manga_backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,27 +17,29 @@ public class MangaController : ControllerBase
     }
     
     [HttpGet("all")]
-    public async Task<List<Manga>> Get()
+    public async Task<List<MangaDto>> Get()
     {
-        var mangas = await _kataMangaContext.Manga.ToListAsync();
+        var mangas = await GetMangaDto().OrderBy(e => e.Id).ToListAsync();
         return mangas;
     }
     
     // get manga by ID
     [HttpGet("{id}")]
-    public async Task<Manga> Get(int id)
+    public async Task<MangaDto> Get(int id)
     {
-        var manga = await _kataMangaContext.Manga.FindAsync(id);
+        var manga = await GetMangaDto().Where(e => e.Id == id).FirstOrDefaultAsync();
         return manga;
     }
     
     // create manga
     [HttpPost]
-    public async Task<ActionResult<Manga>> Post([FromBody] Manga manga)
+    public async Task<ActionResult> Post([FromBody] Manga body)
     {
+        var manga = new Manga(body.Rank, body.Title, body.Status, body.Start_date, body.End_date, body.Synopsis,
+            body.Image_url, body.Num_chapters, body.Num_volumes);
         _kataMangaContext.Manga.Add(manga);
         await _kataMangaContext.SaveChangesAsync();
-        return manga;
+        return Ok();
     }
     
     // update manga
@@ -60,5 +63,21 @@ public class MangaController : ControllerBase
         _kataMangaContext.Manga.Remove(manga);
         await _kataMangaContext.SaveChangesAsync();
         return manga;
+    }
+
+    private IQueryable<MangaDto> GetMangaDto()
+    {
+        return _kataMangaContext.Manga.Select(m => new MangaDto()
+        {
+            Id = m.Id,
+            Title = m.Title,
+            Status = m.Status,
+            Start_date = m.Start_date,
+            End_date = m.End_date,
+            Synopsis = m.Synopsis,
+            Image_url = m.Image_url,
+            Num_chapters = m.Num_chapters,
+            Num_volumes = m.Num_volumes,
+        });
     }
 }

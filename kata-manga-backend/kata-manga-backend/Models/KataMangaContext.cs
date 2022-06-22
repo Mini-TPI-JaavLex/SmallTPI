@@ -6,14 +6,14 @@ public class KataMangaContext : DbContext
 {
     // connect to mysql database
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql("server=localhost,3306;database=KataManga;user=root;password=root; convert zero datetime=True", ServerVersion.AutoDetect("server=localhost,3306;database=KataManga;user=root;password=root"));
+        => optionsBuilder.UseMySql("server=localhost,3306;database=KataManga;user=root;password=root; Convert Zero Datetime=true", ServerVersion.AutoDetect("server=localhost,3306;database=KataManga;user=root;password=root"));
     
     // create a table for manga
     public DbSet<Manga> Manga { get; set; }
     public DbSet<Author> Author { get; set; }
     public DbSet<Genre> Genre { get; set; }
     public DbSet<Magazine> Magazine { get; set; }
-    public DbSet<Write> AuthorManga { get; set; }
+    public DbSet<Write> Write { get; set; }
 
     // Create modelbuilder
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,6 +24,9 @@ public class KataMangaContext : DbContext
         {
             entity.ToTable("manga");
             entity.HasKey(e => e.Id);
+            entity.HasMany(e => e.Write);
+            entity.HasMany(e => e.Classify);
+            entity.HasMany(e => e.Publish);
         });
         
         // create a table for authors with it's mangas
@@ -31,7 +34,7 @@ public class KataMangaContext : DbContext
         {
             entity.ToTable("author");
             entity.HasKey(e => e.Id);
-            entity.HasMany(e => e.Mangas).WithMany(e => e.Authors);
+            entity.HasMany(e => e.Mangas);
         });
         
         // create a table for genres with it's mangas
@@ -39,7 +42,7 @@ public class KataMangaContext : DbContext
         {
             entity.ToTable("genre");
             entity.HasKey(e => e.Id);
-            entity.HasMany(e => e.Mangas).WithMany(e => e.Genres);
+            entity.HasMany(e => e.Mangas);
         });
         
         // create a table for magazines with it's mangas
@@ -47,7 +50,7 @@ public class KataMangaContext : DbContext
         {
             entity.ToTable("magazine");
             entity.HasKey(e => e.Id);
-            entity.HasMany(e => e.Mangas).WithMany(e => e.Magazines);
+            entity.HasMany(e => e.Mangas);
         });
         
         // create an authormanga table with it's author and manga
@@ -55,8 +58,8 @@ public class KataMangaContext : DbContext
         {
             entity.ToTable("write");
             entity.HasKey(e => e.Idmanga);
-            entity.HasMany(e => e.Mangas);
-            entity.HasMany(e => e.Authors);
+            entity.HasOne(e => e.Author);
+            entity.HasOne(e => e.Manga);
         });
     }
 }

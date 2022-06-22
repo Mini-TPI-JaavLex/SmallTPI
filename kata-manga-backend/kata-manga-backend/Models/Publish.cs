@@ -1,10 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace kata_manga_backend.Models;
 
 public class Publish
 {
-    public int Idmanga { get; set; }
-    public int Idmagazine { get; set; }
     
-    public virtual List<Manga> Mangas { get; set; }
-    public virtual List<Magazine> Magazines { get; set; }
+    [Key]
+    public int Idmanga { get; set; }
+    public virtual Manga Manga { get; set; }
+    
+    public int Idmagazine { get; set; }
+    public virtual Magazine Magazine { get; set; }
 }
