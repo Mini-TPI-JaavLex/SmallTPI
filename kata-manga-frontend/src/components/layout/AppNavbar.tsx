@@ -1,5 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { Box } from '@mui/system';
-import { Link } from 'react-router-dom';
 import logo from '../../images/manga-logo.png';
 import ButtonLink from '../global/ButtonLink';
 

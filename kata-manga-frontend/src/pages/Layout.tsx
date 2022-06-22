@@ -1,9 +1,9 @@
 import { Box, Container } from '@mui/material';
-import { PropsWithChildren } from 'react';
+import { Outlet } from 'react-router-dom';
 import AppFooter from '../components/layout/AppFooter';
 import AppNavbar from '../components/layout/AppNavbar';
 
-export default function Layout({ children }: PropsWithChildren) {
+export default function Layout() {
 	return (
 		<Container
 			maxWidth={false}
@@ -21,7 +21,9 @@ export default function Layout({ children }: PropsWithChildren) {
 			>
 				<AppNavbar />
 			</Box>
-			<Box sx={{ flex: 1, mt: 6, height: '100%' }}>{children}</Box>
+			<Box sx={{ flex: 1, mt: 6, height: '100%' }}>
+				<Outlet />
+			</Box>
 			<Box
 				display="flex"
 				justifyContent="center"
