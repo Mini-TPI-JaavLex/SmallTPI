@@ -6,7 +6,7 @@ public class KataMangaContext : DbContext
 {
     // connect to mysql database
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql("server=localhost,3306;database=KataManga;user=root;password=root; Convert Zero Datetime=true", ServerVersion.AutoDetect("server=localhost,3306;database=KataManga;user=root;password=root"));
+        => optionsBuilder.UseMySql("server=mysql,3306;database=KataManga;user=root;password=root; Convert Zero Datetime=true", ServerVersion.AutoDetect("server=mysql,3306;database=KataManga;user=root;password=root"));
     
     // create a table for manga
     public DbSet<Manga> Manga { get; set; }
