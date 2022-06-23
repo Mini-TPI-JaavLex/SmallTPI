@@ -2,16 +2,16 @@ import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
 type MangaCardProps = {
-	imageUrl: string;
-	title: string;
-	volumes: number;
-	chapters: number;
-	status: string;
-	published: string;
-	genres: string[];
-	authors: string[];
-	magazines: string[];
-	synopsis: string;
+	imageUrl?: string;
+	title?: string;
+	volumes?: number;
+	chapters?: number;
+	status?: string;
+	published?: string;
+	genres?: string;
+	authors?: string;
+	magazines?: string;
+	synopsis?: string;
 };
 
 export default function MangaCard({
@@ -34,8 +34,8 @@ export default function MangaCard({
 			alignItems="center"
 			gap={8}
 		>
-			<Box>
-				<img src={imageUrl} />
+			<Box maxWidth="300px">
+				<img src={imageUrl} width="100%" />
 			</Box>
 			<Box
 				display="flex"
@@ -68,17 +68,17 @@ export default function MangaCard({
 				</Typography>
 				<Typography component="span">
 					<Typography variant="subtitle1" fontWeight="bold">
-						Genres: {genres.map(g => ' ' + g).join(', ')}
+						Genres: {genres}
 					</Typography>
 				</Typography>
 				<Typography component="span">
 					<Typography variant="subtitle1" fontWeight="bold">
-						Authors: {authors.map(g => ' ' + g).join(', ')}
+						Authors: {authors}
 					</Typography>
 				</Typography>
 				<Typography component="span">
 					<Typography variant="subtitle1" fontWeight="bold">
-						Magazines: {magazines.map(g => ' ' + g).join(', ')}
+						Magazines: {magazines}
 					</Typography>
 				</Typography>
 				<Typography component="span">
