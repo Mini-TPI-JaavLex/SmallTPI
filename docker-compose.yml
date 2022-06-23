@@ -25,7 +25,7 @@ services:
     ports:
       - 8080:80
   backend:
-    image: katamangaapi
+    build: ./kata-manga-backend/kata-manga-backend
     container_name: kata_manga_backend
     links:
       - mysql
