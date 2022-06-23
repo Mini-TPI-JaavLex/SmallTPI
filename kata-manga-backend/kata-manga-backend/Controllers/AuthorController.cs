@@ -1,3 +1,4 @@
+using kata_manga_backend.Dto;
 using kata_manga_backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,71 +16,103 @@ public class AuthorController : ControllerBase
         _kataMangaContext = new KataMangaContext();
     }
 
-    // get a list of all authors
-    [HttpGet("all")]
-    public async Task<List<Author>> GetAllAuthors()
+    // get all authors
+    [HttpGet]
+    public async Task<ActionResult<List<AuthorOverviewDto>>> GetAllAuthors()
     {
-        var authors = await _kataMangaContext.Author.ToListAsync();
+        var authors = await GetAuthorDto().ToListAsync();
         return authors;
     }
     
     // get author by id
     [HttpGet("{id}")]
-    public async Task<Author> GetAuthorById(int id)
+    public async Task<ActionResult<AuthorOverviewDto>> GetAuthorById(int id)
     {
-        var author = await _kataMangaContext.Author.FirstOrDefaultAsync(a => a.Id == id);
+        var author = await GetAuthorDto().FirstOrDefaultAsync(a => a.Id == id);
+        if (author == null)
+        {
+            return NotFound();
+        }
         return author;
     }
     
-    // create a new author
+    // create an author
     [HttpPost]
-    public async Task<ActionResult<Author>> CreateAuthor(Author author)
+    public async Task<ActionResult<AuthorOverviewDto>> CreateAuthor([FromBody] AuthorCreationDto body)
     {
+        var author = new Author
+        {
+            FirstName = body.FirstName,
+            LastName = body.LastName,
+        };
         _kataMangaContext.Author.Add(author);
         await _kataMangaContext.SaveChangesAsync();
-        return author;
+        
+        var createdAuthor = await GetAuthorDto().FirstOrDefaultAsync(e => e.Id == author.Id);
+        if (createdAuthor == null)
+        {
+            return Problem("Author was not created");
+        }
+        
+        return createdAuthor;
     }
     
     // update an author
     [HttpPut("{id}")]
-    public async Task<ActionResult<Author>> UpdateAuthor(int id, Author author)
-    {
-        if (id != author.Id)
-        {
-            return BadRequest();
-        }
-        _kataMangaContext.Entry(author).State = EntityState.Modified;
-        await _kataMangaContext.SaveChangesAsync();
-        return author;
-    }
-    
-    // delete an author
-    [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<Author>> DeleteAuthor(int id)
+    public async Task<ActionResult<AuthorOverviewDto>> UpdateAuthor(int id, [FromBody] AuthorCreationDto body)
     {
         var author = await _kataMangaContext.Author.FirstOrDefaultAsync(a => a.Id == id);
         if (author == null)
         {
             return NotFound();
         }
+
+        author.FirstName = body.FirstName;
+        author.LastName = body.LastName;
+        await _kataMangaContext.SaveChangesAsync();
+
+        var updatedAuthor = await GetAuthorDto().FirstOrDefaultAsync(e => e.Id == author.Id);
+        if (updatedAuthor == null)
+        {
+            return Problem("Could not get author");
+        }
+        
+        return updatedAuthor;
+    }
+    
+    // delete an author
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<AuthorOverviewDto>> DeleteAuthor(int id)
+    {
+        var author = await _kataMangaContext.Author.FirstOrDefaultAsync(a => a.Id == id);
+        if (author == null)
+        {
+            return NotFound();
+        }
+        
+        _kataMangaContext.Database.ExecuteSqlRaw("DELETE FROM MangaAuthor WHERE AuthorId = {0}", 
+            id);
+        await _kataMangaContext.SaveChangesAsync();
+        
         _kataMangaContext.Author.Remove(author);
         await _kataMangaContext.SaveChangesAsync();
-        return author;
+
+        var deletedAuthor = await GetAuthorDto().FirstOrDefaultAsync(e => e.Id == author.Id);
+        if (deletedAuthor == null)
+        {
+            return Ok("Author was deleted");
+        }
+        
+        return Problem("Author was not deleted");
     }
-    
-    // get a list of all authors with their respective manga
-    [HttpGet("all/manga")]
-    public async Task<List<Author>> GetAllAuthorsWithManga()
+
+    private IQueryable<AuthorOverviewDto> GetAuthorDto()
     {
-        var authors = await _kataMangaContext.Author.Include(a => a.Mangas).ToListAsync();
-        return authors;
-    }
-    
-    // get an author with their respective manga
-    [HttpGet("{id}/manga")]
-    public async Task<Author> GetAuthorWithMangaById(int id)
-    {
-        var author = await _kataMangaContext.Author.Include(a => a.Mangas).FirstOrDefaultAsync(a => a.Id == id);
-        return author;
+        return _kataMangaContext.Author.Select(m => new AuthorOverviewDto()
+        {
+            Id = m.Id,
+            FirstName = m.FirstName,
+            LastName = m.LastName
+        });
     }
 }

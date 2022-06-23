@@ -17,25 +17,25 @@ public class Manga
         Rank = rank;
         Title = title;
         Status = status;
-        Start_date = startDate;
-        End_date = endDate;
+        StartDate = startDate;
+        EndDate = endDate;
         Synopsis = synopsis;
-        Image_url = imageUrl;
-        Num_chapters = numChapters;
-        Num_volumes = numVolumes;
+        ImageUrl = imageUrl;
+        NumChapters = numChapters;
+        NumVolumes = numVolumes;
     }
     public int Id { get; set; }
     public int? Rank { get; set; }
     public string Title { get; set; }
     public string? Status { get; set; }
-    public DateTime? Start_date { get; set; }
-    public DateTime? End_date { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public string? Synopsis { get; set; }
-    public string? Image_url { get; set; }
-    public int? Num_chapters { get; set; }
-    public int? Num_volumes { get; set; }
+    public string? ImageUrl { get; set; }
+    public int? NumChapters { get; set; }
+    public int? NumVolumes { get; set; }
     
-    public virtual List<Write>? Write { get; set; }
-    public virtual List<Classify>? Classify { get; set; }
-    public virtual List<Publish>? Publish { get; set; }
+    public virtual List<MangaAuthor>? MangaAuthors { get; set; }
+    public virtual List<MangaGenre>? MangaGenres { get; set; }
+    public virtual List<MangaMagazine>? MangaMagazines { get; set; }
 }

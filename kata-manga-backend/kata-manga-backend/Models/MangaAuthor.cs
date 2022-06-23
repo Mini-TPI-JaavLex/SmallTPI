@@ -2,24 +2,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace kata_manga_backend.Models;
 
-public class Write
+public class MangaAuthor
 {
-    public Write()
+    public MangaAuthor()
     {
     }
 
-    public Write(int idmanga, int idauthor)
+    public MangaAuthor(int mangaId, int authorId)
     {
-        Idmanga = idmanga;
-        Idauthor = idauthor;
+        MangaId = mangaId;
+        AuthorId = authorId;
     }
     
     public string Role { get; set; }
     
     [Key]
-    public int Idmanga { get; set; }
+    public int MangaId { get; set; }
     public virtual Manga Manga { get; set; }
     
-    public int Idauthor { get; set; }
+    public int AuthorId { get; set; }
     public virtual Author Author { get; set; }
 }
