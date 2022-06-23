@@ -24,3 +24,11 @@ services:
     restart: always
     ports:
       - 8080:80
+  backend:
+    image: katamangaapi
+    container_name: kata_manga_backend
+    links:
+      - mysql
+    restart: always
+    ports:
+      - 5225:5225

@@ -1,3 +1,4 @@
+using kata_manga_backend.Dto;
 using kata_manga_backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,64 +16,103 @@ public class GenreController : ControllerBase
         _kataMangaContext = new KataMangaContext();
     }
     
-    // get a list of all genres
-    [HttpGet("all")]
-    public async Task<List<Genre>> GetAllGenres()
+    // get all authors
+    [HttpGet]
+    public async Task<ActionResult<List<GenreOverviewDto>>> GetAllGenres()
     {
-        var genres = await _kataMangaContext.Genre.ToListAsync();
+        var genres = await GetGenreDto().ToListAsync();
         return genres;
     }
     
-    // get a list of all genres by id
+    // get author by id
     [HttpGet("{id}")]
-    public async Task<Genre> GetGenreById(int id)
+    public async Task<ActionResult<GenreOverviewDto>> GetGenreById(int id)
     {
-        var genre = await _kataMangaContext.Genre.FindAsync(id);
+        var genre = await GetGenreDto().FirstOrDefaultAsync(a => a.Id == id);
+        if (genre == null)
+        {
+            return NotFound();
+        }
         return genre;
     }
     
-    // create a new genre
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateGenre([FromBody] Genre genre)
+    // create an author
+    [HttpPost]
+    public async Task<ActionResult<GenreOverviewDto>> CreateGenre([FromBody] GenreCreationDto body)
     {
+        var genre = new Genre
+        {
+            Name = body.Name,
+            Description = body.Description,
+        };
         _kataMangaContext.Genre.Add(genre);
         await _kataMangaContext.SaveChangesAsync();
-        return Ok(genre);
+        
+        var createdGenre = await GetGenreDto().FirstOrDefaultAsync(e => e.Id == genre.Id);
+        if (createdGenre == null)
+        {
+            return Problem("Genre was not created");
+        }
+        
+        return createdGenre;
     }
     
-    // update a genre
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateGenre([FromBody] Genre genre)
+    // update an author
+    [HttpPut("{id}")]
+    public async Task<ActionResult<GenreOverviewDto>> UpdateGenre(int id, [FromBody] GenreCreationDto body)
     {
-        _kataMangaContext.Genre.Update(genre);
+        var genre = await _kataMangaContext.Genre.FirstOrDefaultAsync(a => a.Id == id);
+        if (genre == null)
+        {
+            return NotFound();
+        }
+
+        genre.Name = body.Name;
+        genre.Description = body.Description;
         await _kataMangaContext.SaveChangesAsync();
-        return Ok(genre);
+
+        var updatedGenre = await GetGenreDto().FirstOrDefaultAsync(e => e.Id == genre.Id);
+        if (updatedGenre == null)
+        {
+            return Problem("Could not get genre");
+        }
+        
+        return updatedGenre;
     }
     
-    // delete a genre
-    [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> DeleteGenre(int id)
+    // delete an author
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<GenreOverviewDto>> DeleteAuthor(int id)
     {
-        var genre = await _kataMangaContext.Genre.FindAsync(id);
+        var genre = await _kataMangaContext.Genre.FirstOrDefaultAsync(a => a.Id == id);
+        if (genre == null)
+        {
+            return NotFound();
+        }
+        
+        _kataMangaContext.Database.ExecuteSqlRaw("DELETE FROM MangaGenre WHERE GenreId = {0}", 
+            id);
+        await _kataMangaContext.SaveChangesAsync();
+        
         _kataMangaContext.Genre.Remove(genre);
         await _kataMangaContext.SaveChangesAsync();
-        return Ok(genre);
-    }
-    
-    // get a list of all genres with it's mangas
-    [HttpGet("all/mangas")]
-    public async Task<List<Genre>> GetAllGenresWithMangas()
-    {
-        var genres = await _kataMangaContext.Genre.Include(g => g.Mangas).ToListAsync();
-        return genres;
-    }
-    
-    // get a list of all genres with it's mangas by id
-    [HttpGet("{id}/mangas")]
-    public async Task<Genre> GetGenreByIdWithMangas(int id)
-    {
-        var genre = await _kataMangaContext.Genre.Include(g => g.Mangas).FirstOrDefaultAsync(a => a.Id == id);
-        return genre;
+
+        var deletedGenre = await GetGenreDto().FirstOrDefaultAsync(e => e.Id == genre.Id);
+        if (deletedGenre == null)
+        {
+            return Ok("Genre was deleted");
+        }
+        
+        return Problem("Genre was not deleted");
     }
 
+    private IQueryable<GenreOverviewDto> GetGenreDto()
+    {
+        return _kataMangaContext.Genre.Select(m => new GenreOverviewDto()
+        {
+            Id = m.Id,
+            Name = m.Name,
+            Description = m.Description
+        });
+    }
 }

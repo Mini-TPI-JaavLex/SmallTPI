@@ -1,3 +1,4 @@
+using kata_manga_backend.Dto;
 using kata_manga_backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,67 +16,100 @@ public class MagazineController : ControllerBase
         _kataMangaContext = new KataMangaContext();
     }
     
-    // get a list of all magazines
-    [HttpGet("all")]
-    public async Task<List<Magazine>> GetAllMagazines()
+    // get all authors
+    [HttpGet]
+    public async Task<ActionResult<List<MagazineOverviewDto>>> GetAllMagazines()
     {
-        var magazines = await _kataMangaContext.Magazine.ToListAsync();
+        var magazines = await GetMagazineDto().ToListAsync();
         return magazines;
     }
     
-    // get a list of all magazines by their id
+    // get author by id
     [HttpGet("{id}")]
-    public async Task<Magazine> GetMagazineById(int id)
+    public async Task<ActionResult<MagazineOverviewDto>> GetMagazineById(int id)
     {
-        var magazine = await _kataMangaContext.Magazine.FindAsync(id);
+        var magazine = await GetMagazineDto().FirstOrDefaultAsync(a => a.Id == id);
+        if (magazine == null)
+        {
+            return NotFound();
+        }
         return magazine;
     }
     
-    // create a new magazine
-    [HttpPost("create")]
-    public async Task<ActionResult<Magazine>> CreateMagazine(Magazine magazine)
+    // create an author
+    [HttpPost]
+    public async Task<ActionResult<MagazineOverviewDto>> CreateMagazine([FromBody] MagazineCreationDto body)
     {
+        var magazine = new Magazine()
+        {
+            Name = body.Name,
+        };
         _kataMangaContext.Magazine.Add(magazine);
         await _kataMangaContext.SaveChangesAsync();
-        return magazine;
+        
+        var createdMagazine = await GetMagazineDto().FirstOrDefaultAsync(e => e.Id == magazine.Id);
+        if (createdMagazine == null)
+        {
+            return Problem("Magazine was not created");
+        }
+        
+        return createdMagazine;
     }
     
-    // update a magazine
-    [HttpPut("update")]
-    public async Task<ActionResult<Magazine>> UpdateMagazine(Magazine magazine)
-    {
-        _kataMangaContext.Magazine.Update(magazine);
-        await _kataMangaContext.SaveChangesAsync();
-        return magazine;
-    }
-    
-    // delete a magazine
-    [HttpDelete("delete/{id}")]
-    public async Task<ActionResult<Magazine>> DeleteMagazine(int id)
+    // update an author
+    [HttpPut("{id}")]
+    public async Task<ActionResult<MagazineOverviewDto>> UpdateMagazine(int id, [FromBody] MagazineCreationDto body)
     {
         var magazine = await _kataMangaContext.Magazine.FirstOrDefaultAsync(a => a.Id == id);
         if (magazine == null)
         {
             return NotFound();
         }
+
+        magazine.Name = body.Name;
+        await _kataMangaContext.SaveChangesAsync();
+
+        var updatedMagazine = await GetMagazineDto().FirstOrDefaultAsync(e => e.Id == magazine.Id);
+        if (updatedMagazine == null)
+        {
+            return Problem("Could not get magazine");
+        }
+        
+        return updatedMagazine;
+    }
+    
+    // delete an author
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<MagazineOverviewDto>> DeleteMagazine(int id)
+    {
+        var magazine = await _kataMangaContext.Magazine.FirstOrDefaultAsync(a => a.Id == id);
+        if (magazine == null)
+        {
+            return NotFound();
+        }
+        
+        _kataMangaContext.Database.ExecuteSqlRaw("DELETE FROM MangaMagazine WHERE MagazineId = {0}", 
+            id);
+        await _kataMangaContext.SaveChangesAsync();
+        
         _kataMangaContext.Magazine.Remove(magazine);
         await _kataMangaContext.SaveChangesAsync();
-        return magazine;
+
+        var deletedMagazine = await GetMagazineDto().FirstOrDefaultAsync(e => e.Id == magazine.Id);
+        if (deletedMagazine == null)
+        {
+            return Ok("Magazine was deleted");
+        }
+        
+        return Problem("Magazine was not deleted");
     }
-    
-    // get a list of magazines with their mangas
-    [HttpGet("mangas")]
-    public async Task<List<Magazine>> GetMagazinesWithMangas()
+
+    private IQueryable<MagazineOverviewDto> GetMagazineDto()
     {
-        var magazines = await _kataMangaContext.Magazine.Include(a => a.Mangas).ToListAsync();
-        return magazines;
-    }
-    
-    // get a list of magazines with their mangas by their id
-    [HttpGet("mangas/{id}")]
-    public async Task<Magazine> GetMagazinesWithMangasById(int id)
-    {
-        var magazine = await _kataMangaContext.Magazine.Include(a => a.Mangas).FirstOrDefaultAsync(a => a.Id == id);
-        return magazine;
+        return _kataMangaContext.Magazine.Select(m => new MagazineOverviewDto()
+        {
+            Id = m.Id,
+            Name = m.Name
+        });
     }
 }
