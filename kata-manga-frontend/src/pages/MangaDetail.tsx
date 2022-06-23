@@ -37,22 +37,23 @@ export default function MangaDetail() {
 			.catch(err => {
 				console.log(err.message);
 			});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	return (
 		<Box>
 			<MangaCard
-				imageUrl={data != undefined && data.imageUrl}
-				title={data != undefined && data.title}
-				volumes={data != undefined && data.numVolumes}
-				chapters={data != undefined && data.numChapters}
-				status={data != undefined && data.status}
-				published={data != undefined && data.startDate}
+				imageUrl={data !== undefined && data.imageUrl}
+				title={data !== undefined && data.title}
+				volumes={data !== undefined && data.numVolumes}
+				chapters={data !== undefined && data.numChapters}
+				status={data !== undefined && data.status}
+				published={data !== undefined && data.startDate}
 				genres={
-					data != undefined &&
+					data !== undefined &&
 					data.genres.map((g: { name: any }) => g.name).join(', ')
 				}
 				authors={
-					data != undefined &&
+					data !== undefined &&
 					data.authors
 						.map(
 							(a: { firstName: any; lastName: any }) =>
@@ -61,10 +62,10 @@ export default function MangaDetail() {
 						.join(', ')
 				}
 				magazines={
-					data != undefined &&
+					data !== undefined &&
 					data.magazines.map((g: { name: any }) => g.name).join(', ')
 				}
-				synopsis={data != undefined && data.synopsis}
+				synopsis={data !== undefined && data.synopsis}
 			/>
 		</Box>
 	);

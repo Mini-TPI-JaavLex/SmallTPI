@@ -1,7 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-ENV ASPNETCORE_URLS http://*:5225
+ENV ASPNETCORE_URLS="http://*:5225;http://*:7227"
 EXPOSE 5225
+EXPOSE 7227
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
