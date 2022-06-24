@@ -35,24 +35,23 @@ git clone git@github.com:Mini-TPI-JaavLex/SmallTPI.git
 git clone https://github.com/Mini-TPI-JaavLex/SmallTPI.git
 ```
 
-#### Étape 2
-
-Naviguez dans le répértoire du code que vous venez de cloner
+puis naviguez dans le répértoire du code que vous venez de cloner
 
 ```bash
 cd SmallTPI/
 ```
 
-#### Étape 3
+#### Étape 2
 
-Pour le premier lancement, lancez le en le buildant
-
-```bash
-docker compose up --build
-```
-
-Pour les prochains lancement, vous n'avez plus besoin de le build à chaque fois et pouvez lancer le projet en faisant:
+Pour builder et lancer le projet
 
 ```bash
 docker compose up
 ```
+
+#### Étape 3
+
+Ouvrez votre navigateur et visitez:
+
+- [le Frontend](http://localhost:3000)
+- [l'API](http://localhost:7227)
