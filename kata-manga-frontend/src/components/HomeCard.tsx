@@ -8,13 +8,11 @@ type HomeCardProps = {
 
 export default function HomeCard({ title, description }: HomeCardProps) {
 	return (
-		<Box display="flex" flexDirection="column">
+		<Box display="flex" flexDirection="column" maxWidth="300px">
 			<Typography variant="subtitle1" fontWeight="bold">
 				{title}
 			</Typography>
-			<Typography variant="body1" fontWeight="bold">
-				{description}
-			</Typography>
+			<Typography variant="body1">{description}</Typography>
 		</Box>
 	);
 }
