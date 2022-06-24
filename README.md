@@ -21,7 +21,7 @@ Le Backend-API, qui fera la liaison entre le frontend et la base de donnée sera
 1. Avoir `git` installé sur sa machine
 1. Avoir docker et la commande `docker-compose` installé sur sa machine
 
-#### Étape 1
+#### Étape 1
 
 Clonez ce repository sur votre machine à l'aide de cette commande:
 
