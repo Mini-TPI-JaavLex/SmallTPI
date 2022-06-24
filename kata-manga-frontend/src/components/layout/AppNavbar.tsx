@@ -22,7 +22,7 @@ export default function AppNavbar() {
 				<ButtonLink path="/" text="Home" />
 				<ButtonLink path="/mangas" text="Mangas" />
 				<Button color="secondary">
-					<a href="https://localhost:7227/swagger/index.html">API</a>
+					<a href="http://localhost:7227/swagger/index.html">API</a>
 				</Button>
 			</Box>
 		</Box>
